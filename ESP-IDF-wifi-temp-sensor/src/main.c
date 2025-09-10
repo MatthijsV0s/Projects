@@ -24,7 +24,7 @@
 #define ESP_WIFI_PASSWORD "gplo0252"
 #define ESP_MAXIMUM_RETRY 5
 
-const int DS_PIN = 4;
+const int DS_PIN = 3;
 
 static const char *TAG = "esp32 webserver";
 
