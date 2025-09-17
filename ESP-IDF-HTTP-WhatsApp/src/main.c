@@ -17,7 +17,8 @@
 #include "ds18b20.h" 
 
 static const char *TAG = "HTTP_CLIENT";
-char api_key[] = "40ABSE6JQXZYMGJB"; // Thingspeak API write key
+char api_key[] = "5018608"; // WhatsApp API write key
+char phone[] = ""; // WhatsApp phone number
 
 const int DS_PIN = 3;
 
@@ -44,22 +45,22 @@ void DS18B20_readings()
     	TempC = ds18b20_get_temp();
     	TempF = TempC*9/5 + 32;
 		temp = TempC;
-//    	ESP_LOGI(TAG, "Temperature in Celsius: %.2f C", TempC);
+    	ESP_LOGI(TAG, "Temperature in Celsius: %.2f C", TempC);
 //    	ESP_LOGI(TAG, "Temperature in Fahrenheit: %.2f F", TempF);
 	}
     
 		
 }	
 
-void send_data_to_thingspeak(void *pvParameters)
+void send_data_to_whatsapp(void *pvParameters)
 {
-	char thingspeak_url[] = "https://api.thingspeak.com";
+	char whatsapp_url[] = "https://api.callmebot.com/whatsapp.php?phone=%s&text=Temp:+%.2f&apikey=%s"; 
 	char data[] = "/update?api_key=%s&field1=%.2f";
 	char post_data[200];
 	esp_err_t err;
 
 	esp_http_client_config_t config = {
-		.url = thingspeak_url,
+		.url = whatsapp_url,
 		.method = HTTP_METHOD_GET,
 		.transport_type = HTTP_TRANSPORT_OVER_SSL,  // added: Specify transport type
 		.crt_bundle_attach = esp_crt_bundle_attach, // added: Attach the certificate bundle
@@ -68,9 +69,11 @@ void send_data_to_thingspeak(void *pvParameters)
 	esp_http_client_set_header(client, "Content-Type", "application/x-www-form-urlencoded");
 	while (1)
 	{
-		vTaskDelay(5000 / portTICK_PERIOD_MS);
+		vTaskDelay(30000 / portTICK_PERIOD_MS);
 		strcpy(post_data, "");
-		snprintf(post_data, sizeof(post_data), data, api_key, temp);
+        if (TempC>30.0){  // send message only if temperature exceeds 30C
+		    snprintf(post_data, sizeof(post_data), whatsapp_url, phone, temp, api_key);
+        }
 		ESP_LOGI(TAG, "post = %s", post_data);
 		//esp_http_client_set_post_field(client, post_data, strlen(post_data)); // removed
 		esp_http_client_set_url(client, post_data);  // replaces set_post_field
@@ -112,6 +115,6 @@ void app_main(void)
 	if (wifi_connect_status)
 	{
 		xTaskCreate(&DS18B20_readings, "get_readings", 2048, NULL, 5, NULL);
-		xTaskCreate(&send_data_to_thingspeak, "send_data_to_thingspeak", 8192, NULL, 6, NULL);
+		xTaskCreate(&send_data_to_whatsapp, "send_data_to_whatsapp", 8192, NULL, 6, NULL);
 	}
 }
