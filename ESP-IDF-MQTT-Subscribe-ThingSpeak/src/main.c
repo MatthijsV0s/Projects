@@ -61,13 +61,13 @@ void send_data_to_thingspeak(void *arg)
     thingspeak_mqtt_client_t mqtt_client;
     thingspeak_mqtt_client_init(&mqtt_client);
 	vTaskDelay(5000 / portTICK_PERIOD_MS);
-	thingspeak_mqtt_client_subscribe(&mqtt_client);
-//	thingspeak_mqtt_client_subscribe_field(&mqtt_client, 1);
+//	thingspeak_mqtt_client_subscribe(&mqtt_client);
+	thingspeak_mqtt_client_subscribe_field(&mqtt_client, 1);
     while(1)
     {
       vTaskDelay(15000 / portTICK_PERIOD_MS);
-//      thingspeak_set_field(&mqtt_client,THINGSPEAK_FIELD1,(uint16_t) (TempC * 100));
-//      thingspeak_mqtt_client_publish(&mqtt_client);
+      thingspeak_set_field(&mqtt_client,THINGSPEAK_FIELD1,(uint16_t) (TempC * 100));
+      thingspeak_mqtt_client_publish(&mqtt_client);
     }
 
 
@@ -85,7 +85,7 @@ void app_main(void)
 	connect_wifi();
 	if (wifi_connect_status)
 	{
-//		xTaskCreate(&DS18B20_readings, "get_readings", 2048, NULL, 5, NULL);
+		xTaskCreate(&DS18B20_readings, "get_readings", 2048, NULL, 5, NULL);
 		xTaskCreate(&send_data_to_thingspeak, "send_data_to_thingspeak", 8192, NULL, 6, NULL);
 	}
 }

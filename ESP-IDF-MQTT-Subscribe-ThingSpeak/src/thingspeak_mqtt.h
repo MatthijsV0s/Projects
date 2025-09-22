@@ -61,6 +61,6 @@ void thingspeak_mqtt_client_publish(thingspeak_mqtt_client_t* client_struct);
 
 void thingspeak_mqtt_client_subscribe(thingspeak_mqtt_client_t* client_struct);
 
-//void thingspeak_mqtt_client_subscribe_field(thingspeak_mqtt_client_t* client_struct, uint8_t field_num);
+void thingspeak_mqtt_client_subscribe_field(thingspeak_mqtt_client_t* client_struct, uint8_t field_num);
 
 #endif

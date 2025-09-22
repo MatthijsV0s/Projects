@@ -200,10 +200,11 @@ void thingspeak_mqtt_client_subscribe(thingspeak_mqtt_client_t* client_struct)
     ESP_LOGI("SUBSCRIBE", "sent subscribe successful for topic %s, msg_id=%d", topic, msg_id);
 }
 
-/*void thingspeak_mqtt_client_subscribe_field(thingspeak_mqtt_client_t* client_struct, uint8_t field_num){
-    char topic[30]="channels/%d", field_num;
-    strcat(topic,CHANNEL_ID);
-    strcat(topic,"/subscribe");
+void thingspeak_mqtt_client_subscribe_field(thingspeak_mqtt_client_t* client_struct, uint8_t field_num){
+    char topic[64];
+    sniprintf(topic, sizeof(topic),
+      "channels/%s/subscribe/fields/field%d",
+      CHANNEL_ID, field_num);
     int msg_id = esp_mqtt_client_subscribe(client_struct->handle, topic, 0);
     ESP_LOGI("SUBSCRIBE", "sent subscribe successful for topic %s, msg_id=%d", topic, msg_id);
-}*/
+}
